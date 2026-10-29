@@ -48,7 +48,7 @@ pub(super) fn prepare_colour_lanes(
             &ExtractedView,
             Option<&Msaa>,
         ),
-        (With<Camera3d>, Without<frame::ForeignCamera>),
+        (With<Camera3d>, bevy::ecs::query::Without<frame::ForeignCamera>),
     >,
     (frame, installed, geometry, pipeline, registry, device, queue, uploaded): (
         Res<PublishedRenderFrame>,
@@ -603,7 +603,7 @@ pub(super) fn install_shared_colour_pass(
             &ExtractedView,
             Option<&Msaa>,
         ),
-        (With<Camera3d>, Without<frame::ForeignCamera>),
+        (With<Camera3d>, bevy::ecs::query::Without<frame::ForeignCamera>),
     >,
     frame: Res<PublishedRenderFrame>,
     pipeline: Res<ExactColourPipeline>,

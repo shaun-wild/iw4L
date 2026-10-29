@@ -8,7 +8,7 @@ pub(super) fn draw_exact_colour(
         &SceneDepthTexture,
         &ExtractedView,
         Option<&Msaa>,
-    ), Without<frame::ForeignCamera>>,
+    ), bevy::ecs::query::Without<frame::ForeignCamera>>,
     frame: Res<PublishedRenderFrame>,
     support: Res<crate::SkinSupport>,
     geometry: Res<ExactColourGeometry>,
