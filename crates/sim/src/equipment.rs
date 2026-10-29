@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): grenade helpers made public, settle_stuck split out. See DAD_OVERLAY_CHANGES.md.
 use crate::bullet_collision::{EntityCollisionEpoch, EntityCollisionTraceGeom};
 use crate::damage::DamageAttempt;
 use crate::frame::FrameWorld;
@@ -65,7 +66,7 @@ pub const ROCKET_CLEANUP_MS: i32 = 60_000;
 pub const BOUNCE_EVENT_SPEED_DELTA: f32 = 100.0;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(crate) enum GrenadeLaunchKind {
+pub enum GrenadeLaunchKind {
     Thrown { remaining_fuse_ms: Option<i32> },
     Launcher,
 }
@@ -138,7 +139,7 @@ fn project_owner_velocity(launch_vel: [f32; 3], owner_vel: [f32; 3]) -> [f32; 3]
     ]
 }
 
-fn grenade_launch_velocity(
+pub fn grenade_launch_velocity(
     direction: [f32; 3],
     facts: &EquipmentRuntimeFacts,
     owner_vel: [f32; 3],
@@ -171,7 +172,7 @@ fn grenade_launch_velocity(
     project_owner_velocity(velocity, owner_vel)
 }
 
-fn grenade_fuse_due(now_ms: i32, detonate_at_ms: Option<i32>, live: bool) -> bool {
+pub fn grenade_fuse_due(now_ms: i32, detonate_at_ms: Option<i32>, live: bool) -> bool {
     detonate_at_ms.is_some_and(|deadline| live && deadline <= now_ms)
 }
 
@@ -183,7 +184,7 @@ fn waits_for_ground(world: &FrameWorld, facts: &EquipmentRuntimeFacts, weapon: u
         || world.weapon_script_name(weapon) == AIRDROP_MARKER_WEAPON
 }
 
-fn grenade_deadlines(
+pub fn grenade_deadlines(
     facts: &EquipmentRuntimeFacts,
     kind: GrenadeLaunchKind,
     now_ms: i32,
@@ -1532,7 +1533,7 @@ fn park_missile_at(
     projectile.pos.tr_delta = velocity;
 }
 
-fn sticks_to_surface(facts: EquipmentRuntimeFacts, normal: [f32; 3]) -> bool {
+pub fn sticks_to_surface(facts: EquipmentRuntimeFacts, normal: [f32; 3]) -> bool {
     matches!(facts.stickiness, 1 | 2) || (matches!(facts.stickiness, 3 | 4) && normal[2] > 0.7)
 }
 
@@ -1545,10 +1546,25 @@ fn settle_equipment(
     fraction: f32,
 ) {
     let facts = required_projectile_facts(world, projectile.weapon);
-    let yaw = evaluate_trajectory(&projectile.apos, level_time_ms(tick))[1];
     if facts.stickiness == 3 {
         apply_missile_land_angles(world, tick, projectile, normal, fraction);
     }
+    settle_stuck(&facts, tick, projectile, origin, normal);
+    push_grenade_stick(world, tick, projectile);
+}
+
+/// A projectile that sticks, settled where it met a face with `normal` at `origin`: stuck a
+/// quarter inch off it, turned to lie on it as its stickiness asks, its timed fuse kept or
+/// cleared. Everything `settle_equipment` does but the landing spin and the stick event.
+/// Made public by dad-rust (2026-10-29) for a host that runs its own projectiles.
+pub fn settle_stuck(
+    facts: &EquipmentRuntimeFacts,
+    tick: Tick,
+    projectile: &mut ProjectileState,
+    origin: [f32; 3],
+    normal: [f32; 3],
+) {
+    let yaw = evaluate_trajectory(&projectile.apos, level_time_ms(tick))[1];
     let origin = core::array::from_fn(|i| origin[i] + normal[i] * 0.25);
     stick_missile(tick, projectile, origin);
     if matches!(facts.stickiness, 2 | 4) {
@@ -1571,10 +1587,9 @@ fn settle_equipment(
         projectile.detonate_at_ms = None;
         projectile.cleanup_at_ms = i32::MAX;
     }
-    push_grenade_stick(world, tick, projectile);
 }
 
-fn stick_missile(tick: Tick, projectile: &mut ProjectileState, origin: [f32; 3]) {
+pub fn stick_missile(tick: Tick, projectile: &mut ProjectileState, origin: [f32; 3]) {
     let time = level_time_ms(tick);
     projectile.origin = origin;
     projectile.velocity = [0.0, 0.0, 0.0];
@@ -1657,7 +1672,7 @@ fn knife_impact(
     push_grenade_stick(world, tick, projectile);
 }
 
-fn unstick_missile(tick: Tick, projectile: &mut ProjectileState) {
+pub fn unstick_missile(tick: Tick, projectile: &mut ProjectileState) {
     let time = level_time_ms(tick);
     projectile.velocity = [0.0, 0.0, 0.0];
     projectile.pos.tr_type = TR_GRAVITY;
@@ -1738,7 +1753,7 @@ fn required_projectile_facts(world: &FrameWorld, weapon: u32) -> EquipmentRuntim
         })
 }
 
-fn bounce_velocity(
+pub fn bounce_velocity(
     projectile: &mut ProjectileState,
     normal: [f32; 3],
     facts: &EquipmentRuntimeFacts,
@@ -1755,7 +1770,7 @@ fn bounce_velocity(
         bounce_reflected_scale(incoming, normal, *coefficients.0, *coefficients.1);
 }
 
-fn bounce_reflected_scale(
+pub fn bounce_reflected_scale(
     incoming: [f32; 3],
     normal: [f32; 3],
     parallel: f32,

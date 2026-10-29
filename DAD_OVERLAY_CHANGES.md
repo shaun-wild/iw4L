@@ -13,3 +13,7 @@ What changed, so a host application can draw its own world and lay iw4L's first-
   load's GPU wait does not wait for map pipelines it will never draw.
 - `render_gpu` render-frame diagnostics read a mesh's indices without panicking on meshes whose
   data lives only in the render world.
+- `sim::equipment`: the grenade's launch velocity, fuse deadlines, fuse check, surface stick test,
+  stick and unstick, and bounce are public, and `settle_stuck` (a sticking projectile settled on a
+  face, without the landing spin and stick event) is split out of `settle_equipment`, which still
+  calls it. A host that runs its own projectiles calls MW2's own grenade code.

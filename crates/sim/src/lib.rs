@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support and public grenade helpers. See DAD_OVERLAY_CHANGES.md.
 pub mod adopt;
 pub mod bullet;
 mod shield;
@@ -83,8 +84,10 @@ pub use content::{CONTENT_DIGEST_SCHEME, ContentComponents, content_components, 
 pub use corpse::{PlayerCorpsePool, PlayerCorpseSlot, level_time_ms};
 pub use damage::{DamageAttempt, DamageOutcome, DamageRefusal, DeathCommit};
 pub use equipment::{
-    EquipmentRuntimeFacts, ProjectileHitGeometry, ProjectileImpact, ProjectileState,
-    projectile_birth_ms,
+    EquipmentRuntimeFacts, GRENADE_DEFAULT_FUSE_MS, GRENADE_FUSE_CAP_MS, GrenadeLaunchKind,
+    ProjectileHitGeometry, ProjectileImpact, ProjectileState, bounce_reflected_scale,
+    bounce_velocity, grenade_deadlines, grenade_fuse_due, grenade_launch_velocity,
+    projectile_birth_ms, settle_stuck, stick_missile, sticks_to_surface, unstick_missile,
 };
 pub use gentity::{
     EntityAllocError, EntityKernel, EntityKernelOccupiedSnapshot, EntityKernelSlotSnapshot,
