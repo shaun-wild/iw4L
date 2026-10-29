@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use bevy::prelude::*;
 use frame::ScopeApp;
 use frame::{WorldGeneration, WorldStamp};
@@ -366,6 +367,7 @@ pub(crate) fn consume_gpu_load_progress(
     demand: Res<GpuSubmitDemand>,
     mut job: Option<ResMut<WorldSpawnJob>>,
     mut ready: ResMut<WorldGpuReady>,
+    overlay_only: Option<Res<render_scene::OverlayOnly>>,
 ) {
     if let Some(job) = job.as_mut() {
         job.request_pending_shaders(&progress.pending_shaders);
@@ -395,10 +397,10 @@ pub(crate) fn consume_gpu_load_progress(
         world_gen,
     );
     ready.pipelines = job_phase_live
-        && progress.warmup.initialized
-        && progress.generation == world_gen
-        && progress.warmup.ready == progress.warmup.total
+        && (overlay_only.is_some() || progress.warmup.initialized)
+        && (overlay_only.is_some() || progress.generation == world_gen)
+        && (overlay_only.is_some() || progress.warmup.ready == progress.warmup.total)
         && progress.waiting_n == 0
-        && progress.working_hits > 0
+        && (progress.working_hits > 0 || overlay_only.is_some())
         && progress.working_not_ready == 0;
 }

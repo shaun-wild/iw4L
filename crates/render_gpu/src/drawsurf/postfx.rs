@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use super::AdmittedExactPort;
 use super::gpu_prepare::{ConstantPackRefusal, split_bind_layout};
 use super::postfx_dof::{
@@ -312,7 +313,7 @@ fn prepare_postfx_gpu(
     mut gpu: ResMut<ExactPostFxGpu>,
     device: Res<RenderDevice>,
     cache: Res<PipelineCache>,
-    views: Query<&ExtractedView>,
+    views: Query<&ExtractedView, Without<frame::ForeignCamera>>,
 ) {
     let (Some(sampler), Some(depth_sampler), Some(film)) = (
         extracted.sampler,
@@ -708,7 +709,7 @@ impl PostFxPipelineWait {
 }
 
 fn draw_postfx(
-    view: ViewQuery<(&ViewTarget, &ExtractedView)>,
+    view: ViewQuery<(&ViewTarget, &ExtractedView), Without<frame::ForeignCamera>>,
     gpu: Res<ExactPostFxGpu>,
     extracted: Res<ExtractedPostFx>,
     floatz: Res<super::floatz::ExactFloatZResolve>,
@@ -722,7 +723,11 @@ fn draw_postfx(
     mut pipeline_wait: Local<Option<PostFxPipelineWait>>,
     mut texture_cache: Local<PostFxTextureCache>,
     mut submitted: Local<Option<(u64, bool, UVec2)>>,
+    overlay_only: Option<Res<render_scene::OverlayOnly>>,
 ) {
+    if overlay_only.is_some() {
+        return;
+    }
     let products = &colour_frame.frame_products;
     let (target, view) = view.into_inner();
     let Some(targets) = gpu.targets.as_ref() else {

@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use bevy::prelude::*;
 use net::FrameClock;
 use render_frame::{SunEffectsFrame, angular_lerp};
@@ -28,7 +29,7 @@ pub(crate) fn publish_sun_effects_frame(
     prepared: Option<Res<PreparedSceneView>>,
     clock: Option<Res<FrameClock>>,
     world_generation: Option<Res<frame::WorldGeneration>>,
-    cameras: Query<(Entity, &GlobalTransform), (With<Camera3d>, Without<FpvLens>)>,
+    cameras: Query<(Entity, &GlobalTransform), (With<Camera3d>, Without<FpvLens>, Without<frame::ForeignCamera>)>,
     context: (
         Option<Res<frame::InstalledMatch>>,
         Option<Res<net::EntityEventCursor>>,

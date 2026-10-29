@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 pub mod scope;
 pub use scope::{
     InMatch, InRound, MatchScope, RoundPhase, ScopeApp, ScopeEpoch, ScopePlugin, ScopeRegistry,
@@ -32,7 +33,7 @@ pub use script_entity_notify::{AbortKillcam, BeginKillcam, KillcamEnded, Spawned
 pub use script_notify::{ExitLevelCalled, register_script_notify};
 pub use session::{
     AdmissionKey, AppScreen, BotNavigationReady, CacWeaponOffer, ClassSelectHandoff,
-    DisplayEncodedCamera, Headless, HostClassLoadouts, HostClassSlot, HudDraw, HudInputView,
+    DisplayEncodedCamera, ForeignCamera, Headless, HostClassLoadouts, HostClassSlot, HudDraw, HudInputView,
     InstalledMatch, LaunchIdentity, LaunchReport, LifeEndCause, LifeEnded, LifeStartReason,
     LifeStarted, LocalLoadKey, LocalSpawnArmed, MapLoadApproved, MapLoadFailed, MatchKey,
     PresentationContext, ReadinessState, RuntimeRole, TeardownReason, UiCamera, UiDraw,

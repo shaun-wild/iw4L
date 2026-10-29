@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use bevy::camera::{Camera3d, Camera3dDepthLoadOp};
 use bevy::prelude::*;
 use bevy::render::camera::ExtractedCamera;
@@ -30,7 +31,7 @@ pub(crate) fn prepare_scene_depth(
     device: Res<RenderDevice>,
     mut cache: ResMut<TextureCache>,
     mut sampled_views: Local<std::collections::HashMap<TextureId, TextureView>>,
-    views: Query<(Entity, &ExtractedCamera, &Camera3d, &Msaa)>,
+    views: Query<(Entity, &ExtractedCamera, &Camera3d, &Msaa), Without<frame::ForeignCamera>>,
 ) {
     let mut textures = std::collections::HashMap::new();
     let mut live = Vec::new();

@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
@@ -1454,7 +1455,7 @@ pub fn sample_render_frame_diag(
         }
         entities = entities.saturating_add(1);
         if let Some(mesh) = meshes.get(&mesh3d.0) {
-            let n = mesh.indices().map(|i| i.len() as u64).unwrap_or(0);
+            let n = mesh.try_indices().map(|i| i.len() as u64).unwrap_or(0);
             index_count = index_count.saturating_add(n);
         }
     }

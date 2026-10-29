@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use std::collections::HashMap;
 
 use asset_game::{CapturedStringTable, MenuCatalog};
@@ -685,7 +686,7 @@ pub(crate) struct WeaponbarInput<'w, 's> {
     settings: Res<'w, frame::GameSettings>,
     select: Res<'w, WeaponSelect>,
     input: Option<Res<'w, frame::HudInputView>>,
-    cameras: Query<'w, 's, &'static Projection, With<Camera3d>>,
+    cameras: Query<'w, 's, &'static Projection, (With<Camera3d>, Without<frame::ForeignCamera>)>,
 }
 
 #[allow(clippy::too_many_arguments)]

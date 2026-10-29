@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use std::collections::HashMap;
 
 use asset_game::MenuCatalog;
@@ -224,7 +225,7 @@ pub(crate) fn update_hud_elems(
     mut pass: ResMut<HudTessPass>,
     mut sound_latch: ResMut<crate::hudelem::HudElemSoundLatch>,
     mut ui_sound: MessageWriter<UiPlaySound>,
-    cameras: Query<(&Camera, &GlobalTransform), With<Camera3d>>,
+    cameras: Query<(&Camera, &GlobalTransform), (With<Camera3d>, Without<frame::ForeignCamera>)>,
     entities: Query<(&CEntity, &CEntityRuntime)>,
 ) {
     if !surface.is_ready() {

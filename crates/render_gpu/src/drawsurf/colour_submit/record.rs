@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use super::encode::{ColourPassInputs, RecordMesh, record_colour_pass};
 use super::*;
 
@@ -7,7 +8,7 @@ pub(super) fn draw_exact_colour(
         &SceneDepthTexture,
         &ExtractedView,
         Option<&Msaa>,
-    )>,
+    ), Without<frame::ForeignCamera>>,
     frame: Res<PublishedRenderFrame>,
     support: Res<crate::SkinSupport>,
     geometry: Res<ExactColourGeometry>,

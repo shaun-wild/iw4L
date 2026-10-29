@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use std::num::NonZeroU64;
 
 use bevy::core_pipeline::{Core3d, Core3dSystems};
@@ -436,7 +437,7 @@ fn prepare_iw_tess(
 }
 
 fn draw_iw_tess(
-    view: ViewQuery<(&ViewTarget, &ExtractedView)>,
+    view: ViewQuery<(&ViewTarget, &ExtractedView), Without<frame::ForeignCamera>>,
     extracted: Res<ExtractedIwTess>,
     meta: Res<IwTessMeta>,
     pipeline: Res<IwTessPipeline>,
@@ -648,7 +649,7 @@ impl HudBloodGpu {
 }
 
 fn prepare_saved_screen(
-    views: Query<&ViewTarget, With<Camera3d>>,
+    views: Query<&ViewTarget, (With<Camera3d>, Without<frame::ForeignCamera>)>,
     device: Res<RenderDevice>,
     cache: Res<PipelineCache>,
     pipeline: Res<IwTessPipeline>,
@@ -702,7 +703,7 @@ fn prepare_saved_screen(
 fn prepare_hud_blood(
     postfx: Res<super::postfx::ExtractedPostFx>,
     extracted: Res<ExtractedIwTess>,
-    views: Query<&ViewTarget, With<Camera3d>>,
+    views: Query<&ViewTarget, (With<Camera3d>, Without<frame::ForeignCamera>)>,
     device: Res<RenderDevice>,
     cache: Res<PipelineCache>,
     queue: Res<RenderQueue>,

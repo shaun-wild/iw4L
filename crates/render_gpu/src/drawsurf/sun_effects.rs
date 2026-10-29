@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use crate::drawsurf::scene_depth::SceneDepthTexture;
 use bevy::core_pipeline::tonemapping::tonemapping;
 use bevy::core_pipeline::{Core3d, Core3dSystems};
@@ -374,7 +375,7 @@ fn bind_sun<'a>(
 }
 
 fn draw_sun_effects(
-    view: ViewQuery<(&ViewTarget, &ExtractedView, &SceneDepthTexture)>,
+    view: ViewQuery<(&ViewTarget, &ExtractedView, &SceneDepthTexture), Without<frame::ForeignCamera>>,
     frame: Res<super::PublishedRenderFrame>,
     gpu: Option<ResMut<SunEffectsGpu>>,
     cache: Res<PipelineCache>,

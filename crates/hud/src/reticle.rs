@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use assets::PreparedWeapons;
 use bevy::prelude::*;
 use bevy::ui::Display;
@@ -67,7 +68,7 @@ pub(crate) fn update_reticle(
     presented: Res<PresentedSnapshot>,
     local: Res<LocalPresentClient>,
     weapons: Option<Res<PreparedWeapons>>,
-    cameras: Query<&Projection, With<Camera3d>>,
+    cameras: Query<&Projection, (With<Camera3d>, Without<frame::ForeignCamera>)>,
     mut hud_images: ResMut<HudImages>,
     mut images: ResMut<Assets<Image>>,
     mut gaps: ResMut<HudPresentationGaps>,

@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use super::{
     ArenaPack, Buffer, MaterialGenerationId, PackDraw, PreparedExactDraw, RunPackCache, TableEpoch,
 };
@@ -47,7 +48,7 @@ pub(super) fn prepare_colour_lanes(
             &ExtractedView,
             Option<&Msaa>,
         ),
-        With<Camera3d>,
+        (With<Camera3d>, Without<frame::ForeignCamera>),
     >,
     (frame, installed, geometry, pipeline, registry, device, queue, uploaded): (
         Res<PublishedRenderFrame>,
@@ -602,7 +603,7 @@ pub(super) fn install_shared_colour_pass(
             &ExtractedView,
             Option<&Msaa>,
         ),
-        With<Camera3d>,
+        (With<Camera3d>, Without<frame::ForeignCamera>),
     >,
     frame: Res<PublishedRenderFrame>,
     pipeline: Res<ExactColourPipeline>,

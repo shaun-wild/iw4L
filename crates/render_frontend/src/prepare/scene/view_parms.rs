@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 pub use render_scene::{
     LockPvsView, PreparedSceneView, RLockPvs, RSubwindowDvar, RZnearDepthhackDvar, RZnearDvar,
     SmEnableDvar, SmSunEnableDvar, host_clip_from_view, lens_world_from_parent_child,
@@ -24,6 +25,7 @@ pub(crate) fn stamp_prepared_scene_view(
     subwindow: Res<RSubwindowDvar>,
     hosts: Query<&Transform, With<FlyCamera>>,
     mut lenses: Query<(&Transform, &Projection, &mut Camera), With<FpvLens>>,
+    overlay_only: Option<Res<render_scene::OverlayOnly>>,
 ) {
     *view = PreparedSceneView::default();
     let Ok(parent) = hosts.single() else {
@@ -88,6 +90,9 @@ pub(crate) fn stamp_prepared_scene_view(
         }
         _ => bevy::camera::ClearColorConfig::Default,
     };
+    if overlay_only.is_some() {
+        camera.clear_color = bevy::camera::ClearColorConfig::Custom(Color::NONE);
+    }
     let dpvs_z_near = hud_iw4::znear_from_refdef(0.0, znear.value);
     *view = prepare_scene_view(
         lens_world_from_parent_child(*parent, *child),

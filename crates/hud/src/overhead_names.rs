@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use crate::draw2d::{Draw2dCmd, Draw2dList, Draw2dOp, Draw2dProvenance, tessellate_fonts};
 use crate::gpu_list::{HudTessPass, TessJob};
 use asset_game::MenuCatalog;
@@ -175,7 +176,7 @@ fn update_overhead_names(
     cg_clock: Res<FrameClock>,
     surface: Res<crate::surface::Hud2dSurface>,
     catalog: Option<Res<MenuCatalog>>,
-    cameras: Query<(&Camera, &GlobalTransform), With<Camera3d>>,
+    cameras: Query<(&Camera, &GlobalTransform), (With<Camera3d>, Without<frame::ForeignCamera>)>,
     prediction: Option<Res<net::ClientPredictionState>>,
     view: Res<frame::ViewSubject>,
     effects: Res<frame::ScreenEffectsView>,

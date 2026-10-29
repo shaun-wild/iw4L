@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use super::smodel::{SmodelGpuPlan, SmodelPassMaterial, pack_smodel_meshes, runtime_maps};
 use super::xmodel::XModelSurfaceDraw;
 use crate::prepare::scene::{spawn::WorldSpawnJob, world::WorldScene};
@@ -25,8 +26,9 @@ pub fn build_sky_model_draw_plan(
     scene: Option<Res<WorldScene>>,
     job: Option<Res<WorldSpawnJob>>,
     existing: Option<Res<SkyModelDrawPlan>>,
+    overlay_only: Option<Res<render_scene::OverlayOnly>>,
 ) {
-    if existing.is_some() {
+    if existing.is_some() || overlay_only.is_some() {
         return;
     }
     let (Some(scene), Some(job)) = (scene, job) else {

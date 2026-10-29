@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use bevy::prelude::*;
 
 pub struct RenderGpuPlugin;
@@ -8,6 +9,9 @@ impl Plugin for RenderGpuPlugin {
         app.insert_resource(skin.clone());
         app.add_plugins(bevy::render::extract_component::ExtractComponentPlugin::<
             frame::DisplayEncodedCamera,
+        >::default());
+        app.add_plugins(bevy::render::extract_component::ExtractComponentPlugin::<
+            frame::ForeignCamera,
         >::default());
         match crate::SamplerTable::captured_2026_08_11() {
             Ok(table) => {

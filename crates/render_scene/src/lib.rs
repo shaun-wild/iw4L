@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 mod skin_support;
 pub use skin_support::SkinSupport;
 pub mod camera;
@@ -59,3 +60,8 @@ pub use world_instances::{WorldDynEntInstance, WorldScriptModelInstance};
 pub use xmodel_draw::{
     PreparedSunShadowFrame, XModelCasterBound, XModelColourRefusal, XModelSurfaceDraw,
 };
+
+/// Host switch: draw only the first-person view, effects and models, never the loaded map's own
+/// world, static models or sky. Set by a host that draws its own world under iw4L's view.
+#[derive(bevy::prelude::Resource, Clone, Copy, Debug, Default)]
+pub struct OverlayOnly;

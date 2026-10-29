@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use std::path::PathBuf;
 
 use bevy::prelude::*;
@@ -451,3 +452,9 @@ pub struct UiCamera;
 #[derive(Component, Clone, bevy::render::extract_component::ExtractComponent)]
 #[extract_app(bevy::render::RenderApp)]
 pub struct DisplayEncodedCamera;
+
+/// A camera a host application draws its own world with, beside iw4L's. iw4L's
+/// renderer, HUD and presentation leave it alone. With none, iw4L behaves as before.
+#[derive(Component, Clone, bevy::render::extract_component::ExtractComponent)]
+#[extract_app(bevy::render::RenderApp)]
+pub struct ForeignCamera;

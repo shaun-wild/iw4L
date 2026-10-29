@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use crate::WorldPipelineWarmup;
 
 use super::*;
@@ -71,7 +72,7 @@ pub(super) fn init_or_update_pipeline(
 
 pub(super) fn kick_extracted_colour_pipelines(
     frame: Option<Res<PublishedRenderFrame>>,
-    views: Query<(&ViewTarget, Option<&Msaa>), (With<Camera3d>, With<ViewUpscalingPipeline>)>,
+    views: Query<(&ViewTarget, Option<&Msaa>), (With<Camera3d>, With<ViewUpscalingPipeline>, Without<frame::ForeignCamera>)>,
     device: Res<RenderDevice>,
     mut registry: ResMut<ExactPipelineRegistry>,
     pipeline: Res<ExactColourPipeline>,
@@ -107,7 +108,7 @@ pub(super) fn kick_extracted_colour_pipelines(
 
 pub(super) fn kick_admitted_pipelines(
     extracted: Option<ExtractedColourRefs<'_>>,
-    views: &Query<(&ViewTarget, Option<&Msaa>), (With<Camera3d>, With<ViewUpscalingPipeline>)>,
+    views: &Query<(&ViewTarget, Option<&Msaa>), (With<Camera3d>, With<ViewUpscalingPipeline>, Without<frame::ForeignCamera>)>,
     device: &RenderDevice,
     registry: &mut ExactPipelineRegistry,
     pipeline: &ExactColourPipeline,

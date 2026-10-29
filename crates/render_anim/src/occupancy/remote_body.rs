@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use crate::anim::remote_body::{
     AdvancedRemoteTree, CpuBodyGeom, CpuSurfMeta, PendingGunSkin, PreparedRemoteKits,
     RemoteBodySkinnedItem, RemoteBodySkinnedQueue, RemoteBodyTrees, RemoteModelLods,
@@ -325,7 +326,7 @@ fn occupy_remote_scene_ents(
     mut scene_skels: ResMut<AnimDObjSceneSkels>,
     mut scene_submissions: MessageWriter<AnimDObjSceneSubmission>,
     lod_skinned: Res<render_scene::LodRampSkinnedDvar>,
-    cameras: Query<&GlobalTransform, With<Camera3d>>,
+    cameras: Query<&GlobalTransform, (With<Camera3d>, Without<frame::ForeignCamera>)>,
     local: Res<LocalPresentClient>,
     presented: Res<PresentedSnapshot>,
     subject: Option<Res<ViewSubject>>,

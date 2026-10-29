@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use super::bmodel_world_from_local_for_surf;
 use super::common::{
     push_direct_lane_item, retained_draw_order_tie, with_catalog, world_surface_rank,
@@ -620,8 +621,28 @@ pub(crate) fn rebuild_static_draw_lane(
     lod_ramp: Res<LodRampDvar>,
     runtime: Res<crate::assemble::drawsurf::MaterialGeneration>,
     world_generation: Option<Res<WorldGeneration>>,
+    overlay_only: Option<Res<render_scene::OverlayOnly>>,
 ) {
     let _post_rebuild = perf::Span::HostPostRebuildMs.enter();
+    if overlay_only.is_some() {
+        list.generation_id = runtime.catalog.generation_id();
+        list.world_generation = world_generation
+            .as_ref()
+            .map(|g| g.stamp())
+            .unwrap_or_default();
+        if list.last_static.is_some() || !list.static_items.is_empty() {
+            list.world_items.clear();
+            list.world_run_surfs.clear();
+            list.smodel_items.clear();
+            list.static_items.clear();
+            list.colour.clear();
+            list.emissive.clear();
+            list.distortion.clear();
+            list.last_static = None;
+            list.membership_revision = list.membership_revision.wrapping_add(1);
+        }
+        return;
+    }
     let (world_plan, scene) = world_geom;
     let (smodel_plan, lighting, dpvs, smc_cache, smc_enable, pretess_dvar) = smodel;
     let smc_on = smc_enable.enabled != Some(false);
