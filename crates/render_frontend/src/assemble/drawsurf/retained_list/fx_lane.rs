@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use super::common::{
     item_uses_distortion_lane, push_direct_lane_item, retained_draw_order_tie, with_catalog,
 };
@@ -289,8 +290,16 @@ pub(crate) fn rebuild_fx_draw_lane(
     smodel_lighting: Option<Res<crate::prepare::scene::smodel_lighting::WorldSmodelLighting>>,
     camera_origin: Option<Res<render_fx::FxCameraOrigin>>,
     scene: Option<Res<WorldScene>>,
+    overlay_only: Option<Res<render_scene::OverlayOnly>>,
 ) {
     let (fx, particle_cloud, mark_mesh, glass_mesh) = plans;
+    // dad-rust overlay: the map's glass and its marks belong to the host's world.
+    let (mark_mesh, glass_mesh) = if overlay_only.is_some() {
+        (None, None)
+    } else {
+        (mark_mesh, glass_mesh)
+    };
+    }
     let eye = camera_origin.map(|c| c.0).unwrap_or([0.0; 3]);
     let glass_plan = glass_mesh.as_deref();
     let distortion_key = scene

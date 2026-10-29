@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use frame::ScopeApp;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -273,8 +274,14 @@ fn boot_createfx_oneshots(
     fx_world: FxSceneAccess,
     cgame_active: Res<GameActive>,
     adopted: Option<Res<LastAdoptedSnapshot>>,
+    overlay_only: Option<Res<render_scene::OverlayOnly>>,
 ) {
     if cursor.createfx_booted {
+        return;
+    }
+    // dad-rust overlay: the map's ambient effects belong to the host's world.
+    if overlay_only.is_some() {
+        cursor.createfx_booted = true;
         return;
     }
     if !cgame_active.get() {

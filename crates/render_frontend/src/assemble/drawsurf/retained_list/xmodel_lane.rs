@@ -1,3 +1,4 @@
+// Modified by dad-rust (2026-10-29): host overlay support (frame::ForeignCamera, render_scene::OverlayOnly). See DAD_OVERLAY_CHANGES.md.
 use super::common::{retained_draw_order_tie, with_catalog};
 use crate::assemble::drawsurf::tess::xmodel::{
     XMODEL_OBJECT_ID_VIEWMODEL, XModelDrawPlan, merge_xmodel_draw_plan,
@@ -170,6 +171,7 @@ pub(crate) fn rebuild_xmodel_draw_lane(
         Option<Res<crate::assemble::drawsurf::tess::xmodel::DynEntDrawPlan>>,
         Option<Res<crate::prepare::scene::gfx_scene::HostGfxScene>>,
     ),
+    overlay_only: Option<Res<render_scene::OverlayOnly>>,
     mut xmodel: ResMut<XModelDrawPlan>,
     sky: Option<Res<crate::assemble::drawsurf::tess::sky::SkyModelDrawPlan>>,
     prepared: Option<Res<PreparedSceneView>>,
@@ -182,6 +184,30 @@ pub(crate) fn rebuild_xmodel_draw_lane(
     ),
 ) {
     let (fpv, bodies, scripts, missiles, items, fx_models, dynents, gfx_scene) = plans;
+    if std::env::var_os("IW4L_OVERLAY_LOG").is_some() {
+        static LAST: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_secs());
+        if LAST.swap(now, std::sync::atomic::Ordering::Relaxed) != now {
+            bevy::log::info!(
+                "overlay xmodel sources: scripts={} items={} dynents={} missiles={} fx_models={} gfx_scene={}",
+                scripts.as_deref().map_or(0, |p| p.draws().len()),
+                items.as_deref().map_or(0, |p| p.draws().len()),
+                dynents.as_deref().map_or(0, |p| p.draws().len()),
+                missiles.as_deref().map_or(0, |p| p.draws().len()),
+                fx_models.as_deref().map_or(0, |p| p.draws().len()),
+                gfx_scene.is_some(),
+            );
+        }
+    }
+    // dad-rust overlay: the map's own models (script models, dynamic entities, items) belong to
+    // the host's world, not the player's view.
+    let (scripts, items, dynents) = if overlay_only.is_some() {
+        (None, None, None)
+    } else {
+        (scripts, items, dynents)
+    };
     let empty_fpv = crate::assemble::drawsurf::tess::xmodel::FpvDrawPlan::default();
     let empty_body = crate::assemble::drawsurf::tess::xmodel::RemoteBodyDrawPlan::default();
     let empty_scripts = crate::assemble::drawsurf::tess::xmodel::ScriptModelDrawPlan::default();
