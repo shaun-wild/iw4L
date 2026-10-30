@@ -299,7 +299,6 @@ pub(crate) fn rebuild_fx_draw_lane(
     } else {
         (mark_mesh, glass_mesh)
     };
-    }
     let eye = camera_origin.map(|c| c.0).unwrap_or([0.0; 3]);
     let glass_plan = glass_mesh.as_deref();
     let distortion_key = scene
